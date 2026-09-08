@@ -1,13 +1,12 @@
-# AMI survey — client (v1)
+# AMI survey — client
 
 Measures what an agent workflow actually cost to run, and submits the result to
-the AMI survey service.
+the AMI survey at `survey.agentbenchmark.dev`.
 
-> **This is the v1 client, and it is frozen.** It submits to
-> `survey.agentbenchmark.dev` and nowhere else. A newer client exists at
-> `speedofred/ami-survey-client`, submitting to a different service; the two are
-> not interchangeable and a token from one will not work on the other. Install
-> this one only if you were pointed here.
+That destination is a constant in the source rather than a setting. There is
+nothing to point this at and no way to misconfigure it: a stale environment
+variable cannot redirect your submission onto your own disk, which is the one
+failure that would make a survey look successful while collecting nothing.
 
 **Start here: [GETTING-STARTED.md](GETTING-STARTED.md).** It assumes no prior
 setup and covers macOS, Linux and Windows.

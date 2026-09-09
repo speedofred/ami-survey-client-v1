@@ -20,10 +20,36 @@ def _path_env(name: str, default: Path) -> Path:
 
 
 # The collection inventory is the single source of truth for the survey fields.
+#: A file that ships with the code, wherever the code ended up.
+#:
+#: In a checkout these sit beside the package - `ami-survey/config`, next to
+#: `ami-survey/ami_survey`. A wheel has no "beside": the package lands in
+#: site-packages and its parent is a directory full of other people's libraries.
+#: The build copies them inside the package instead, so this looks in both and
+#: takes whichever exists. A checkout keeps behaving exactly as it did.
+def _resource(name: str) -> Path:
+    beside = PACKAGE_ROOT / name
+    return beside if beside.exists() else Path(__file__).resolve().parent / name
+
+
+#: Where state lives: the runs in flight, the price cache, the token.
+#:
+#: Beside the code in a checkout, which is right while developing. Wrong once
+#: installed - uv and pipx unpack into a cache they rebuild without warning, so
+#: a token written there is a token re-registered on every restart, and a run
+#: opened by one tool call is gone before the next one asks for it. An installed
+#: package keeps its state in the user's home, where it survives.
+def _default_data_dir() -> Path:
+    if (PROJECT_ROOT / ".git").is_dir():
+        return PACKAGE_ROOT / "data"
+    return Path.home() / ".ami-survey"
+
+
 INVENTORY_CSV = _path_env("AMI_INVENTORY_CSV", PROJECT_ROOT / "Collection_Inventory.csv")
 
-CONFIG_DIR = _path_env("AMI_CONFIG_DIR", PACKAGE_ROOT / "config")
-DATA_DIR = _path_env("AMI_DATA_DIR", PACKAGE_ROOT / "data")
+CONFIG_DIR = _path_env("AMI_CONFIG_DIR", _resource("config"))
+DATA_DIR = _path_env("AMI_DATA_DIR", _default_data_dir())
+SKILLS_DIR = _resource("skills")
 
 RUNS_DIR = DATA_DIR / "runs"  # in-flight runs (mutable)
 RESPONSES_DIR = DATA_DIR / "responses"  # submitted survey responses (immutable)

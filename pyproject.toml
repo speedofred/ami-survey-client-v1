@@ -1,0 +1,57 @@
+# Packaging for the AMI survey client.
+#
+# The point of this file is one line of setup instead of three. Before it, the
+# measured route meant cloning a repository, running an installer and restarting
+# the agent - and on our own numbers that route converted worse than the remote
+# connector which cannot measure anything. Now it is a command an MCP client can
+# launch on its own:
+#
+#     { "mcpServers": { "ami-survey": { "command": "uvx", "args": ["ami-survey"] } } }
+#
+# Nothing to clone, nothing to keep updated, and the adapter that reads the
+# runtime's session log is present - which is the only way a run is `measured`.
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ami-survey"
+version = "1.0.0"
+description = "Measure what an agent workflow actually cost, from the runtime's own session log."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Fred Viner" }]
+keywords = ["mcp", "agent", "benchmark", "telemetry", "claude", "codex"]
+
+# Deliberately empty, and worth keeping that way. The client reads a session log
+# and posts JSON; the standard library does both. A dependency here is a
+# dependency on every machine this ever runs on.
+dependencies = []
+
+[project.urls]
+Homepage = "https://agentbenchmark.dev"
+Source = "https://github.com/speedofred/ami-survey-client-v1"
+
+[project.scripts]
+# What `uvx ami-survey` runs: the MCP server over stdio, which is how an agent
+# expects to launch a local server.
+ami-survey = "ami_survey.mcp_server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["ami-survey/ami_survey"]
+
+# The two things the client reads off disk sit *beside* the package in a
+# checkout - `ami-survey/config`, `ami-survey/skills`, siblings of
+# `ami-survey/ami_survey`. A wheel has no beside: the package lands in
+# site-packages next to other people's libraries. Copying them inside at build
+# time means the repository layout does not have to change, and `config._resource`
+# looks in both places and takes whichever exists.
+[tool.hatch.build.targets.wheel.force-include]
+"ami-survey/config" = "ami_survey/config"
+"ami-survey/skills" = "ami_survey/skills"
+
+[tool.hatch.build.targets.sdist]
+include = ["ami-survey/ami_survey", "ami-survey/config", "ami-survey/skills",
+           "README.md", "LICENSE", "pyproject.toml"]

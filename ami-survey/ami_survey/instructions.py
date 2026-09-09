@@ -26,9 +26,9 @@ from pathlib import Path
 
 from . import config
 
-SKILL_FILE = config.PACKAGE_ROOT / "skills" / "ami-survey" / "SKILL.md"
+SKILL_FILE = config.SKILLS_DIR / "ami-survey" / "SKILL.md"
 MAKE_MEASURABLE_FILE = (
-    config.PACKAGE_ROOT / "skills" / "ami-make-measurable" / "SKILL.md"
+    config.SKILLS_DIR / "ami-make-measurable" / "SKILL.md"
 )
 
 RUNTIMES = {

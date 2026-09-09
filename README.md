@@ -54,6 +54,21 @@ ask whoever pointed you here.
 
 ## Install
 
+**One line, if your agent reads an MCP config.** Add this and restart it:
+
+```json
+{ "mcpServers": { "ami-survey": { "command": "uvx", "args": ["ami-survey"] } } }
+```
+
+`uvx` fetches and runs the package on demand — nothing to clone, nothing to keep
+updated. The first time a tool needs a token it registers this machine and
+stores it under `~/.ami-survey/token`; there is nothing to paste.
+
+Already have a token? Set `AMI_API_TOKEN` in that block's `env` and it is used
+instead.
+
+**From a clone**, if you would rather read the source first:
+
 ```bash
 python3 ami-survey/scripts/install.py --user
 ```

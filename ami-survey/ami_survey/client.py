@@ -43,16 +43,23 @@ class ApiCallFailed(RuntimeError):
         super().__init__(f"API returned {status}: {detail}")
 
 
-def _request(method: str, path: str, body: dict | None = None, timeout: float = 30.0):
+def _request(method: str, path: str, body: dict | None = None, timeout: float = 30.0,
+             authenticate: bool = True):
     url = config.API_URL.rstrip("/") + path
     data = json.dumps(body or {}).encode() if method == "POST" else None
     req = urllib.request.Request(url, data=data, method=method)
     if data is not None:
         req.add_header("Content-Type", "application/json")
-    # Set when this machine's local MCP server submits to a hosted API that
-    # requires a token. A purely local install leaves it unset and sends nothing.
-    if config.API_TOKEN:
-        req.add_header("Authorization", f"Bearer {config.API_TOKEN}")
+    # The token, registering this machine once if it has none. Imported here
+    # rather than at module scope because enrolment asks for the token *through*
+    # this function, and `authenticate=False` is what stops that call trying to
+    # authenticate itself into existence.
+    if authenticate:
+        from . import enrol
+
+        bearer = enrol.token()
+        if bearer:
+            req.add_header("Authorization", f"Bearer {bearer}")
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             raw = resp.read().decode()
@@ -71,7 +78,10 @@ def _request(method: str, path: str, body: dict | None = None, timeout: float = 
 
 def is_up() -> bool:
     try:
-        _request("GET", "/health", timeout=2.0)
+        # Deliberately unauthenticated. /health needs no token, and asking for
+        # one here is a loop: enrolment registers *through* this client, which
+        # health-checks first, which would ask enrolment for a token again.
+        _request("GET", "/health", timeout=2.0, authenticate=False)
         return True
     except (ApiUnavailable, ApiCallFailed):
         return False
@@ -172,6 +182,6 @@ def get(path: str, timeout: float = 30.0):
     return _request("GET", path, timeout=timeout)
 
 
-def post(path: str, body: dict, timeout: float = 30.0):
+def post(path: str, body: dict, timeout: float = 30.0, authenticate: bool = True):
     ensure_api()
-    return _request("POST", path, body, timeout=timeout)
+    return _request("POST", path, body, timeout=timeout, authenticate=authenticate)

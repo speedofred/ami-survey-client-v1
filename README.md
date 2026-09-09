@@ -50,17 +50,55 @@ the score.
 
 ## Install
 
-There are two routes. They differ in whether anything can read your runtime's
-logs, which determines whether the result is recorded as `measured` or
-`unmeasured`.
+There are two routes. What separates them, and what separates the hosts below,
+is whether anything can read your runtime's logs. That determines whether the
+result is recorded as `measured` or `unmeasured`.
 
-### Measured
+### Install the client
 
-Add this to your agent's MCP configuration and restart it:
+One block of configuration, then restart the agent.
+
+**Claude Code**, in `~/.claude.json`, or through the Developer settings in
+Claude Desktop:
 
 ```json
 { "mcpServers": { "ami-survey": { "command": "uvx", "args": ["ami-survey"] } } }
 ```
+
+Runs are measured: the client reads Claude Code's own session log, so the token
+counts and the cost come from the runtime rather than from the agent.
+
+<details>
+<summary><b>Codex</b> (measured)</summary>
+
+In `~/.codex/config.toml`. Codex uses TOML here, not JSON:
+
+```toml
+[mcp_servers.ami-survey]
+command = "uvx"
+args = ["ami-survey"]
+```
+
+The client reads Codex's rollout log. This also covers a local or self-hosted
+model driven through Codex, because the log is written either way.
+
+</details>
+
+<details>
+<summary><b>Copilot</b> (not measured)</summary>
+
+In `.vscode/mcp.json`, or your user profile through the **MCP: Open User
+Configuration** command. The key is `servers` here, not `mcpServers`:
+
+```json
+{ "servers": { "ami-survey": { "command": "uvx", "args": ["ami-survey"] } } }
+```
+
+The tools work and the survey submits, but Copilot writes no session log the
+client can read. The run carries the workflow, the grade and the stage timings
+without token counts or cost, and is recorded as `unmeasured`.
+
+</details>
 
 Then, once the agent finishes a piece of work, ask it:
 
@@ -78,7 +116,7 @@ gives a `pipx` form and a route that requires neither.
 If you already hold a token, set it as `AMI_API_TOKEN` in that block's `env` and
 it will be used instead of registering a new one.
 
-### Unmeasured
+### Or use the remote connector, with nothing installed
 
 In claude.ai, open Settings, then Connectors, then Add custom connector, and
 supply:

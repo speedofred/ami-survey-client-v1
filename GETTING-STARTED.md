@@ -1,7 +1,7 @@
 # Benchmarking your own agent workflow
 
 A guide for measuring what an AI agent actually costs you when it does a real
-piece of work — and for turning one of your existing prompts into something
+piece of work, and for turning one of your existing prompts into something
 measurable.
 
 No prior knowledge assumed. Roughly 15 minutes to set up, then 5 minutes per
@@ -11,7 +11,7 @@ workflow you want to measure.
 
 ## What this is, in plain terms
 
-When you ask an agent to do a job, you get the finished work — but no idea what
+When you ask an agent to do a job, you get the finished work, but no idea what
 it cost. How many times did it call the model? How many tokens? How long? How
 much money? Was the output any good?
 
@@ -40,18 +40,18 @@ and you can choose between them with numbers instead of impressions.
 
 You need three things:
 
-1. **An AI coding agent on your computer** — Claude Code or Codex. This works
+1. **An AI coding agent on your computer**, either Claude Code or Codex. This works
    with what you already use; you don't install a new assistant.
-2. **Nothing else.** The setup gets its own submission token when you run it —
+2. **Nothing else.** The setup gets its own submission token when you run it:
    press Enter at the prompt and it registers one for you. If somebody has
    already sent you a token, paste that instead; treat it like a password.
 3. **Python 3.9 or newer.**
-   - **macOS** — already installed. Nothing to do.
-   - **Windows** — install it from [python.org](https://www.python.org/downloads/),
+   - **macOS**: already installed. Nothing to do.
+   - **Windows**: install it from [python.org](https://www.python.org/downloads/),
      and **tick "Add python.exe to PATH"** on the first screen of the installer.
      Do not install it from the Microsoft Store; the Store version behaves
      oddly when other programs try to launch it.
-   - **Linux** — `sudo apt install python3 git` or your distribution's equivalent.
+   - **Linux**: `sudo apt install python3 git` or your distribution's equivalent.
 
 > **A note on the terminal.** A few steps need you to type commands. On macOS
 > that's **Terminal**; on Windows, **PowerShell** (press Start and type
@@ -63,7 +63,7 @@ You need three things:
 
 ---
 
-## Part 1 — Set it up
+## Part 1: Set it up
 
 ### The short way, if you only want to submit
 
@@ -75,7 +75,7 @@ configuration, restart it, and skip to Part 2:
 ```
 
 `uvx` comes with [uv](https://docs.astral.sh/uv/). If you would rather not
-install uv, `pipx` does the same job — use `"command": "pipx"` with
+install uv, `pipx` does the same job; use `"command": "pipx"` with
 `"args": ["run", "ami-survey"]`. Neither ships with Python; install whichever
 you prefer, or follow the longer route below, which needs neither.
 
@@ -84,7 +84,7 @@ and stores it at `~/.ami-survey/token`.
 
 **The rest of Part 1 is the clone route.** Take it if you want to read the
 source before running it, or if you want the benchmarking commands in
-[COMMANDS.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/COMMANDS.md) — they need a clone and are not part of submitting.
+[COMMANDS.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/COMMANDS.md). They need a clone and are not part of submitting.
 
 ---
 
@@ -112,7 +112,7 @@ Windows](https://git-scm.com/download/win) first and reopen PowerShell.
 
 ### Step 2: Connect it to your agent
 
-Run **one** of these — whichever agent you use.
+Run **one** of these, whichever agent you use.
 
 **macOS or Linux:**
 
@@ -136,7 +136,7 @@ It will ask for a submission token:
   is intentional, so it isn't left in your terminal history.
 
 The token it registers is shown once. Keep a copy if you ever want to reinstall
-without registering again — but nothing breaks if you don't, you just register
+without registering again, but nothing breaks if you don't; you just register
 another.
 
 There is nothing to configure beyond that. Surveys go to
@@ -149,7 +149,7 @@ file. Follow what it says on screen.
 ### Step 3: Restart your agent
 
 **Fully quit** Claude Code or Codex and open it again. Closing the window isn't
-enough — on macOS use Cmd-Q or quit from the menu; on Windows use Alt+F4, or
+enough. On macOS use Cmd-Q or quit from the menu; on Windows use Alt+F4, or
 right-click the taskbar icon and choose Close.
 
 This matters because the settings are only read when the app starts. Skipping
@@ -162,12 +162,12 @@ Open your agent and ask it, in plain English:
 > Fetch the AMI survey instructions and tell me in one sentence what the survey measures.
 
 If it comes back with a sensible answer about tokens, cost and workflow stages,
-you're connected. If it says it has no such tool, go back to Step 3 — the restart
+you're connected. If it says it has no such tool, go back to Step 3; the restart
 is almost always the culprit.
 
 ---
 
-## Part 2 — Turn your workflow into a benchmark
+## Part 2: Turn your workflow into a benchmark
 
 You have a prompt you already use. Ask your agent to adapt it:
 
@@ -177,7 +177,7 @@ Paste your prompt when it asks. You get back three things: the rewritten prompt,
 a small `workflow.json` file, and a note of what it changed and why.
 
 That's the whole step. The rest of this section explains what it should have
-done — worth the two minutes, because **you** are the one who knows what your
+done, and worth the two minutes, because **you** are the one who knows what your
 workflow is supposed to do, and the checks below are quick.
 
 If your agent doesn't offer it, [MAKE-IT-MEASURABLE.md](MAKE-IT-MEASURABLE.md)
@@ -188,16 +188,16 @@ has the same instructions to paste in by hand.
 Read the summary it gives you and confirm three things.
 
 **It only added; it didn't improve.** Your instructions should be word for word
-what they were. A helpful agent tidying your prompt sounds harmless and isn't —
+what they were. A helpful agent tidying your prompt sounds harmless and isn't:
 you'd be benchmarking a workflow you don't actually run.
 
 **The stage names are yours.** They should read like your own description of the
-work — "Screen CVs", "Draft Emails" — not "Phase 1" and "Phase 2". These names
+work: "Screen CVs", "Draft Emails", not "Phase 1" and "Phase 2". These names
 appear in your results, and generic ones make the breakdown useless.
 
 **It told you if something was missing.** If your prompt has no way to judge
 whether the output is good, the agent should have *said so* rather than inventing
-a standard. That's a real finding, not a failure — see below.
+a standard. That's a real finding, not a failure; see below.
 
 ### What makes a workflow worth measuring
 
@@ -211,14 +211,14 @@ think about X" is not.
 of rules, a right answer. Without this the quality grade is just a feeling, and
 the most interesting column in your results becomes noise.
 
-**3. Two or more natural stages.** Most real work has them — *research, then
+**3. Two or more natural stages.** Most real work has them: *research, then
 write*; *classify, then respond*; *find the bug, then fix it*. Stages are what
 let you see where the money actually went, which is usually not where you'd
 guess.
 
 ### Doing it by hand
 
-You don't need this if you asked your agent — it's here so you know exactly what
+You don't need this if you asked your agent; it's here so you know exactly what
 changed, and for anyone who'd rather do it themselves. Four edits; nothing else
 changes.
 
@@ -231,7 +231,7 @@ Call `ami_mark_stage` as you move between the two phases of this work, using the
 stage names "Research" and "Draft".
 ```
 
-Use your own words for the stage names — whatever you'd call those phases when
+Use your own words for the stage names, whatever you'd call those phases when
 describing the job to a colleague. Generic names like "Phase 1" tell you nothing
 later.
 
@@ -269,7 +269,7 @@ against, that judgement is worth reading. Given nothing, it will say
 #### Change 4: Pin the name (optional but recommended)
 
 Results are grouped by workflow name. If the agent invents a slightly different
-name each run — "Invoice Processing" then "Invoice Processing Workflow" — your
+name each run, "Invoice Processing" then "Invoice Processing Workflow", your
 runs won't group and you can't compare them.
 
 Create a small file called `workflow.json` next to your prompt:
@@ -286,7 +286,7 @@ workflow_description from workflow.json."*
 
 ### A worked example
 
-**Before** — a prompt that works fine but can't be measured:
+**Before**: a prompt that works fine but can't be measured:
 
 ```
 Go through the invoices in invoices/ and pull out the total, the date and the
@@ -294,7 +294,7 @@ supplier for each one. Flag any that break the rules in approval-rules.md.
 Write the results to output/summary.csv.
 ```
 
-**After** — the same job, now measurable:
+**After**: the same job, now measurable:
 
 ```
 Go through the invoices in invoices/ and pull out the total, the date and the
@@ -314,15 +314,15 @@ Three added lines. The job is identical; it is now something you can compare.
 
 ---
 
-## Part 3 — Run it
+## Part 3: Run it
 
 ### The two-message rule
 
 This is the only part of the process that's easy to get wrong.
 
-**Message 1** — your adapted prompt. Let the agent work until it stops.
+**Message 1**: your adapted prompt. Let the agent work until it stops.
 
-**Message 2** — sent separately, after it has finished:
+**Message 2**: sent separately, after it has finished:
 
 > Take the AMI survey regarding the invoice processing workflow.
 
@@ -348,7 +348,7 @@ survey submitted: run 3543e9e0ef72
 ```
 
 **Read the warnings if there are any.** They're limits on how much the data can
-be trusted — an unresolved price, a stage that couldn't be placed. No warnings
+be trusted: an unresolved price, a stage that couldn't be placed. No warnings
 means a clean measurement.
 
 ### Sanity-check the grade
@@ -374,8 +374,8 @@ session identifiers.
 
 The measurement happens on your machine. Only the finished summary travels, and
 it travels to one place: `survey.agentbenchmark.dev`, over HTTPS. This tool does
-not keep a copy for you — the survey is the shared benchmark, not a private
-report — and you can read back your own submissions, and only your own, through
+not keep a copy for you. The survey is the shared benchmark, not a private
+report, and you can read back your own submissions, and only your own, through
 the links it prints when you submit.
 
 ---
@@ -401,18 +401,18 @@ python3 ami-survey/scripts/uninstall.py --purge
 ```
 
 If you use Codex, it will remind you to delete one block from
-`~/.codex/config.toml` by hand — that file is left alone automatically because
+`~/.codex/config.toml` by hand. That file is left alone automatically because
 it can hold credentials for other things.
 
 Then fully quit and reopen your agent. Finally, delete the downloaded folder
-(`~/ami-survey`) if you want it gone entirely — the uninstaller tells you where
+(`~/ami-survey`) if you want it gone entirely; the uninstaller tells you where
 it is rather than deleting the ground it is standing on.
 
 ## If something goes wrong
 
 **"I don't have that tool" / nothing happens**
-The restart. Fully quit the app — Cmd-Q on macOS, Alt+F4 on Windows, not just
-closing the window — and reopen. Settings are read only at launch.
+The restart. Fully quit the app, using Cmd-Q on macOS or Alt+F4 on Windows, not just
+closing the window, then reopen. Settings are read only at launch.
 
 **"Unrecognised token"**
 The token is wrong, expired, or was revoked. Check for a stray space when you
@@ -420,7 +420,7 @@ pasted it, then ask for a new one.
 
 **It says it submitted, but nothing arrives**
 Ask whoever gave you the token to check. Submissions have exactly one
-destination, so a survey that reported success reached the server — but a
+destination, so a survey that reported success reached the server, but a
 revoked token or a rejected submission will say so rather than succeed
 quietly.
 
@@ -432,7 +432,7 @@ PowerShell and open a new one.
 **The agent took the survey without being asked**
 Your prompt is missing *"When you are finished, stop. Do not take the survey
 yet."* Add it and run again. Also check you aren't pasting a **command** for the
-agent to run — if it runs something that prints instructions, it will follow
+agent to run: if it runs something that prints instructions, it will follow
 them.
 
 **"No stages were declared" in the warnings**
@@ -441,7 +441,7 @@ The run is still measured; you just lose the phase-by-phase breakdown.
 
 **The cost shows as unavailable**
 The model you used isn't in the public price list. Everything else is still
-valid — only the money column is missing.
+valid; only the money column is missing.
 
 ---
 
@@ -455,7 +455,7 @@ Submitted            Model            Calls   In tok    Out tok   Cost $  Grade
 2026-08-04 19:51:19  gpt-5.6-terra       18  511,308      6,002   0.2422      A
 ```
 
-Same job, two models, one third of the cost. That's the question this answers —
+Same job, two models, one third of the cost. That's the question this answers,
 and now it's a measurement rather than a hunch.
 
 One honest caveat: the grade column is each agent's opinion of its own work.

@@ -2,8 +2,8 @@
 #
 # The point of this file is one line of setup instead of three. Before it, the
 # measured route meant cloning a repository, running an installer and restarting
-# the agent - and on our own numbers that route converted worse than the remote
-# connector which cannot measure anything. Now it is a command an MCP client can
+# the agent. On our own numbers that route converted worse than the remote
+# connector, which cannot measure anything. Now it is a command an MCP client can
 # launch on its own:
 #
 #     { "mcpServers": { "ami-survey": { "command": "uvx", "args": ["ami-survey"] } } }
@@ -21,7 +21,7 @@ name = "ami-survey"
 # handshake reports the same constant, and a package whose metadata and
 # handshake disagree sends anyone debugging it to the wrong version.
 dynamic = ["version"]
-description = "Measure what an agent workflow actually cost, from the runtime's own session log."
+description = "Measures the cost, tokens and duration of a completed agent workflow from the runtime's session log."
 readme = "README.md"
 requires-python = ">=3.9"
 # An SPDX expression, not the licence text. `license = { file = ... }` inlines all
@@ -68,6 +68,8 @@ dependencies = []
 [project.urls]
 Homepage = "https://agentbenchmark.dev"
 Source = "https://github.com/speedofred/ami-survey-client-v1"
+Documentation = "https://github.com/speedofred/ami-survey-client-v1/blob/main/GETTING-STARTED.md"
+Issues = "https://github.com/speedofred/ami-survey-client-v1/issues"
 
 [project.scripts]
 # What `uvx ami-survey` runs: the MCP server over stdio, which is how an agent

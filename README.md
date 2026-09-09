@@ -1,20 +1,22 @@
-# AMI — what did that workflow actually cost?
+# AMI survey client
 
-You can find out what a single API call costs. Almost nobody can say what one
-finished piece of work costs — one triaged ticket, one screened CV, one drafted
-reply — across every call, retry and tool round-trip the agent made getting
-there.
+Measures what a completed agent workflow cost to run, by reading the runtime's
+own session log, and submits the result to the AMI survey at
+`survey.agentbenchmark.dev`.
 
-This measures it, by reading your runtime's own session log after the fact. Ask
-your agent to run it when it finishes something, and you get a scorecard back.
+The cost of a single API call is easy to obtain. The cost of one finished piece
+of work is not: one triaged ticket, one screened CV, one drafted reply, across
+every call, retry and tool round-trip the agent made getting there. This
+measures that figure.
 
-Every number comes from the log, not from the agent. An agent asked how many
-tokens it just used will guess, and guess confidently.
+Every number is read from the runtime's records rather than reported by the
+agent. An agent asked how many tokens it has just used will estimate, and will
+present the estimate with confidence.
 
 ## What comes back
 
-A real run — six support tickets triaged and answered by Claude Opus 5 in Claude
-Code:
+A real run of six support tickets, triaged and answered by Claude Opus 5 in
+Claude Code:
 
 ```
 Maturity Index      85.0  Strong          (observability 40%, evidence 30%, quality 30%)
@@ -36,21 +38,21 @@ findings
             yet. The Maturity Index does not use the reference and is unaffected.
 ```
 
-**$0.12 per ticket, 21 seconds per ticket.** That is the number this exists to
+**$0.12 per ticket, 21 seconds per ticket.** That is the figure this exists to
 produce, and it is the one most teams cannot currently state about their own
 work.
 
-The findings are worth reading twice: the scorecard says out loud where its own
-numbers are soft. A cost reference that is still a placeholder is a placeholder
-in your report too, not quietly folded into a score.
+The findings record where the scorecard's own numbers are soft. A cost reference
+that is still a placeholder is reported as a placeholder rather than folded into
+the score.
 
 ## Install
 
-Two ways in. The difference between them is whether anything can read your
-runtime's logs, and that decides whether your numbers are **measured** or
-**unmeasured**.
+There are two routes. They differ in whether anything can read your runtime's
+logs, which determines whether the result is recorded as `measured` or
+`unmeasured`.
 
-### Measured — one line
+### Measured
 
 Add this to your agent's MCP configuration and restart it:
 
@@ -58,70 +60,74 @@ Add this to your agent's MCP configuration and restart it:
 { "mcpServers": { "ami-survey": { "command": "uvx", "args": ["ami-survey"] } } }
 ```
 
-Then ask your agent, after it finishes a piece of work:
+Then, once the agent finishes a piece of work, ask it:
 
 > Take the AMI survey regarding the ticket triage you just did
 
-That is the whole setup. Nothing to clone, nothing to keep updated, and no token
-to paste — the first call that needs one registers this machine and stores it at
-`~/.ami-survey/token`.
+There is nothing to clone and nothing to keep updated. No token needs to be
+supplied: the first call that requires one registers the machine and stores the
+token at `~/.ami-survey/token`.
 
-**`uvx` comes from [uv](https://docs.astral.sh/uv/)** — the same tool the MCP
-docs use for Python servers, so if you have installed one before you already
-have it. If you would rather not, [GETTING-STARTED.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/GETTING-STARTED.md)
-has a `pipx` form and a route that needs neither.
+`uvx` is part of [uv](https://docs.astral.sh/uv/), the tool the MCP
+documentation uses for Python servers. If uv is not installed,
+[GETTING-STARTED.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/GETTING-STARTED.md)
+gives a `pipx` form and a route that requires neither.
 
-Already have a token? Put it in that block's `env` as `AMI_API_TOKEN` and it is
-used instead of registering a new one.
+If you already hold a token, set it as `AMI_API_TOKEN` in that block's `env` and
+it will be used instead of registering a new one.
 
-### Unmeasured — a remote connector, nothing installed
+### Unmeasured
 
-In claude.ai: Settings → Connectors → Add custom connector, and give it
+In claude.ai, open Settings, then Connectors, then Add custom connector, and
+supply:
 
 ```
 https://survey.agentbenchmark.dev/mcp
 ```
 
-Nothing to install and no token. These runs are recorded as `unmeasured` and are
-never compared against measured ones — a server on the other side of the
-internet cannot read your runtime's logs, so the token counts and cost are
-simply absent rather than guessed.
+Nothing is installed and no token is required. These runs are recorded as
+`unmeasured` and are never compared against measured ones: a remote server
+cannot read your runtime's logs, so token counts and cost are absent rather than
+estimated.
 
-Install the client above when you want those numbers too.
+## Licence
 
-## Licence, up front
+An evaluation licence. This is not open source.
 
-**This is not open source.** It is an evaluation licence: run it on machines you
-control, redistribute it verbatim if you like, but it may not be modified, sold
-or built upon. Full terms in
+Permitted: installing and running the software on machines you control, for the
+purpose of evaluating it and submitting survey responses; and redistributing
+verbatim, unmodified copies with the licence intact.
+
+Not permitted: modification beyond what is needed to run it for that purpose,
+derivative works, sublicensing, and sale.
+
+Full terms in
 [LICENSE](https://github.com/speedofred/ami-survey-client-v1/blob/main/LICENSE).
-
-Said here rather than at the bottom, because finding it at the bottom after
-reading everything else is worse than being told now.
 
 ## What leaves your computer
 
-Token counts, timings, model names, the stage names your workflow declared, and
+Token counts, timings, model names, the stage names the workflow declared, and
 the grade. **Not your files, not your prompts, not your shell commands.**
 [GETTING-STARTED.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/GETTING-STARTED.md)
 sets this out in full.
 
 Submissions go to `survey.agentbenchmark.dev` and nowhere else. That destination
-is a constant in the source rather than a setting: a stale environment variable
-cannot redirect your submission onto your own disk, which is the one failure that
-would make a run look successful while collecting nothing.
+is a constant in the source rather than a setting, so a stale environment
+variable cannot redirect a submission onto your own disk. That is the one
+failure which would make a run appear successful while collecting nothing.
 
 ## Requirements
 
-Python 3.9 or newer. No dependencies — the standard library only.
+Python 3.9 or newer. No dependencies; the standard library only.
 
-## Everything else
+## Further reading
 
 - [GETTING-STARTED.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/GETTING-STARTED.md)
-  — assumes no prior setup; macOS, Linux and Windows, and what to do when it does
-  not work.
+  assumes no prior setup, covers macOS, Linux and Windows, and explains what to
+  do when the tools do not appear.
 - [COMMANDS.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/COMMANDS.md)
-  — the clone-and-run route: benchmarking one workflow across several models on
-  your own API key. Not needed to take part.
+  documents the clone-and-run route, which benchmarks one workflow across
+  several models on your own API key. It is not required in order to take part.
 - [MAKE-IT-MEASURABLE.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/MAKE-IT-MEASURABLE.md)
-  — how to structure a workflow so there is something worth measuring.
+  explains how to structure a workflow so that there is something worth
+  measuring.

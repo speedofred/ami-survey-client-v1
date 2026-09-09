@@ -24,7 +24,7 @@ Windows form, the Codex form, and what to do when it does not work.
 
 | | |
 |---|---|
-| `ami_survey/adapters/` | reads a harness's own session log — one adapter per harness, currently Claude Code and Codex |
+| `ami_survey/adapters/` | reads a harness's own session log; one adapter per harness, currently Claude Code and Codex |
 | `ami_survey/mcp_server.py` | the `ami_*` tools your agent calls |
 | `ami_survey/client.py` | talks to the survey service |
 | `skills/` | the procedure, in the skill format Claude Code and Codex both read |
@@ -33,8 +33,8 @@ Windows form, the Codex form, and what to do when it does not work.
 | `workflows/` | a sample workflow to practise on |
 | `bin/` | the commands below |
 
-The survey service itself — the field definitions, scoring, pricing and storage —
-is not in this repository. This half runs on your machine; that half runs on the
+The survey service itself, meaning the field definitions, scoring, pricing and
+storage, is not in this repository. This half runs on your machine; that half runs on the
 server, and the two speak over HTTPS.
 
 Submissions go to **`survey.agentbenchmark.dev`** and nowhere else. That is a
@@ -52,8 +52,8 @@ its full flags.
 
 ### Benchmarking a workflow across models
 
-**`ami-run`** runs a workflow against a provider's API — your key, your account —
-reads the `usage` block off every real response, and submits the survey. One
+**`ami-run`** runs a workflow against a provider's API, on your key and your
+account. It reads the `usage` block off every real response, and submits the survey. One
 agent loop over four sandboxed file tools, identical for every provider, which is
 what makes the numbers comparable between them.
 
@@ -88,7 +88,7 @@ grade afterwards with `--no-reset`.
 
 ### Managing workflows
 
-**`ami-workflow`** lists, scaffolds and prepares them. It never runs anything —
+**`ami-workflow`** lists, scaffolds and prepares them. It never runs anything;
 that is `ami-run`, and they are separate commands so that printing a prompt and
 spending money on an API are not one word apart.
 
@@ -107,7 +107,7 @@ measurement window. `--no-reset` prints without clearing.
 
 ### The rest
 
-**`ami-session`** — which session the adapter would measure, and why. The first
+**`ami-session`** reports which session the adapter would measure, and why. The first
 thing to run when a survey measured the wrong thing.
 
 ```bash
@@ -115,7 +115,7 @@ ami-survey/bin/ami-session          # the session this survey would read
 ami-survey/bin/ami-session --all    # every session it can see
 ```
 
-**`ami-skill`** — the survey procedure and tool schemas, for a runtime that is
+**`ami-skill`** prints the survey procedure and tool schemas, for a runtime that is
 not an MCP client.
 
 ```bash
@@ -124,7 +124,7 @@ ami-survey/bin/ami-skill --runtime http           # for a plain-HTTP caller
 ami-survey/bin/ami-skill --tools openai           # schemas as function defs
 ```
 
-**`ami-mcp`** — the MCP server your agent launches. `scripts/install.py` writes
+**`ami-mcp`** is the MCP server your agent launches. `scripts/install.py` writes
 it into your agent's configuration; you rarely run it yourself.
 
 Reading the collected results is not here: submissions live on the survey

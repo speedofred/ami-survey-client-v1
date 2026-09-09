@@ -1,33 +1,21 @@
-Copyright (c) 2026 Fred Viner. All rights reserved.
+MIT License
 
-AMI EVALUATION LICENCE 1.0
+Copyright (c) 2026 Fred Viner
 
-Permission is granted to any person obtaining a copy of this software to
-install and run it on machines they control, for the sole purpose of
-evaluating it and submitting survey responses to a survey service operated
-by the copyright holder.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-Permission is also granted to redistribute this software verbatim: complete,
-unmodified, and with this licence included. This is what allows the software
-to be published on a package index and carried by that index's mirrors and
-caches, which copy what they host without being asked.
-
-No other permission is granted. In particular this licence does not grant the
-right to sublicense or sell the software; to modify it other than as needed to
-run it for the purpose above; or to create derivative works from it. All rights
-not expressly granted here are reserved.
-
-This licence covers only the files in this repository. It grants no rights in
-the survey service the software submits to, in the data collected by that
-service, or in any trade mark or name used by either.
-
-Permission ends if the copyright holder gives notice that it has ended, or if
-these terms are breached. Redistribution of verbatim copies already made
-remains permitted.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

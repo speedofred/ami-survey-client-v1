@@ -1,3 +1,5 @@
+<!-- mcp-name: io.github.speedofred/ami-survey -->
+
 # AMI survey client
 
 Measures what a completed agent workflow cost to run, by reading the runtime's
@@ -92,17 +94,12 @@ estimated.
 
 ## Licence
 
-An evaluation licence. This is not open source.
+MIT. Use it, modify it, redistribute it, include it in your own work.
 
-Permitted: installing and running the software on machines you control, for the
-purpose of evaluating it and submitting survey responses; and redistributing
-verbatim, unmodified copies with the licence intact.
+The licence covers this client only. It grants no rights in the survey service
+the client submits to, or in the data that service collects.
 
-Not permitted: modification beyond what is needed to run it for that purpose,
-derivative works, sublicensing, and sale.
-
-Full terms in
-[LICENSE](https://github.com/speedofred/ami-survey-client-v1/blob/main/LICENSE).
+Full terms in [LICENSE](https://github.com/speedofred/ami-survey-client-v1/blob/main/LICENSE).
 
 ## What leaves your computer
 

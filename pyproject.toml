@@ -24,16 +24,14 @@ dynamic = ["version"]
 description = "Measures the cost, tokens and duration of a completed agent workflow from the runtime's session log."
 readme = "README.md"
 requires-python = ">=3.9"
-# An SPDX expression, not the licence text. `license = { file = ... }` inlines all
-# thirty lines of LICENSE into the `License:` metadata header, which renders on
-# PyPI as a wall of legal text where a label belongs. The terms are not an OSI
-# licence and have no SPDX identifier, so they get a `LicenseRef-`, which is the
-# form SPDX reserves for exactly this. `license-files` still ships the full text
-# in the distribution.
+# An SPDX expression, not the licence text. `license = { file = ... }` inlines the
+# whole of LICENSE into the `License:` metadata header, which renders on PyPI as a
+# wall of text where a label belongs. `license-files` still ships the full text in
+# the distribution.
 #
 # Note there is deliberately no `License ::` classifier below: PEP 639 forbids
 # pairing one with an expression, and PyPI rejects the upload if you do.
-license = "LicenseRef-AMI-Evaluation-1.0"
+license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "Fred Viner" }]
 keywords = ["mcp", "agent", "benchmark", "telemetry", "claude", "codex"]

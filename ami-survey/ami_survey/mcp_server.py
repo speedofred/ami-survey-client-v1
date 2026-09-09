@@ -18,13 +18,13 @@ import sys
 import traceback
 from typing import Any
 
-from . import client, config
+from . import __version__, client, config
 from . import text as ami_text
 from . import adapters
 from .timeutil import normalize, parse_ts, utcnow
 
 PROTOCOL_VERSION = "2024-11-05"
-SERVER_INFO = {"name": "ami-survey", "version": "0.1.0"}
+SERVER_INFO = {"name": "ami-survey", "version": __version__}
 _CURRENT_POINTER = config.RUNS_DIR / ".current_run"
 _PENDING_STAGES = config.RUNS_DIR / ".pending_stages.json"
 

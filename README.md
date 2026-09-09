@@ -1,184 +1,127 @@
-# AMI survey — client
+# AMI — what did that workflow actually cost?
 
-Measures what an agent workflow actually cost to run, and submits the result to
-the AMI survey at `survey.agentbenchmark.dev`.
+You can find out what a single API call costs. Almost nobody can say what one
+finished piece of work costs — one triaged ticket, one screened CV, one drafted
+reply — across every call, retry and tool round-trip the agent made getting
+there.
 
-That destination is a constant in the source rather than a setting. There is
-nothing to point this at and no way to misconfigure it: a stale environment
-variable cannot redirect your submission onto your own disk, which is the one
-failure that would make a survey look successful while collecting nothing.
+This measures it, by reading your runtime's own session log after the fact. Ask
+your agent to run it when it finishes something, and you get a scorecard back.
 
-**Start here: [GETTING-STARTED.md](GETTING-STARTED.md).** It assumes no prior
-setup and covers macOS, Linux and Windows.
+Every number comes from the log, not from the agent. An agent asked how many
+tokens it just used will guess, and guess confidently.
 
-**Not on Claude Code or Codex?** You do not need this repo. In claude.ai, add
-`https://survey.agentbenchmark.dev/mcp` as a custom connector — Settings →
-Connectors → Add custom connector — and ask your agent to take the survey.
-Nothing to install and no token to paste. Those runs are recorded as
-`unmeasured`, since a remote server cannot read your runtime's logs; install
-this client when you want the token counts and cost as well.
+## What comes back
 
-## What this is
+A real run — six support tickets triaged and answered by Claude Opus 5 in Claude
+Code:
 
-Ask any agent *"Take the AMI survey regarding [your workflow]"* after it
-finishes a piece of work, and it will report what that work cost — tokens,
-calls, wall-clock time, model, price, and a graded assessment of the output —
-without you filling anything in.
+```
+Maturity Index      85.0  Strong          (observability 40%, evidence 30%, quality 30%)
+Performance         78.13 Strong          confidence Very High
 
-Every number comes from the runtime's own session records, not from the agent's
-recollection. An agent asked how many tokens it just used will guess, and guess
-confidently. This reads the log instead.
+  quality           80.0   graded Good on ami-quality-v2
+  cost              72.73  $0.123226 per ticket   ($0.739355 for the run)
+  speed             84.47  20.90s per ticket
+  evidence          70.0   measured, on a self-issued token
+  observability    100.0
 
-## What is in here
+findings
+  weakness  Cost is the weakest pillar at 72.73; speed is strongest at 84.47.
+            $0.123226 per unit against a $0.01 reference. A cheaper model, or
+            fewer calls, moves this; check calls[] for where the tokens went.
 
-| | |
-|---|---|
-| `ami_survey/adapters/` | reads a harness's own session log — one adapter per harness, currently Claude Code and Codex |
-| `ami_survey/mcp_server.py` | the `ami_*` tools your agent calls |
-| `ami_survey/client.py` | talks to the survey service |
-| `skills/` | the procedure, in the skill format Claude Code and Codex both read |
-| `ami_survey/runners/` | drives a workflow against a provider's API, with your own key |
-| `scripts/install.py` | wires the above into your agent |
-| `workflows/` | a sample workflow to practise on |
-| `bin/` | the commands below |
+  note      Cost and speed were scored against a provisional reference, which is
+            a placeholder rather than a measurement. Do not quote them as settled
+            yet. The Maturity Index does not use the reference and is unaffected.
+```
 
-The survey service itself — the field definitions, scoring, pricing and storage —
-is not in this repository. This half runs on your machine; that half runs on the
-server, and the two speak over HTTPS.
+**$0.12 per ticket, 21 seconds per ticket.** That is the number this exists to
+produce, and it is the one most teams cannot currently state about their own
+work.
 
-Submissions go to **`survey.agentbenchmark.dev`** and nowhere else. That is a
-constant in the source, not a setting: there is no local survey to run here, and
-a result that never left your machine would not be comparable with anyone
-else's, which is the entire point of the exercise. You need a token to submit;
-ask whoever pointed you here.
+The findings are worth reading twice: the scorecard says out loud where its own
+numbers are soft. A cost reference that is still a placeholder is a placeholder
+in your report too, not quietly folded into a score.
 
 ## Install
 
-**One line, if your agent reads an MCP config.** Add this and restart it:
+Two ways in. The difference between them is whether anything can read your
+runtime's logs, and that decides whether your numbers are **measured** or
+**unmeasured**.
+
+### Measured — one line
+
+Add this to your agent's MCP configuration and restart it:
 
 ```json
 { "mcpServers": { "ami-survey": { "command": "uvx", "args": ["ami-survey"] } } }
 ```
 
-`uvx` fetches and runs the package on demand — nothing to clone, nothing to keep
-updated. The first time a tool needs a token it registers this machine and
-stores it under `~/.ami-survey/token`; there is nothing to paste.
+Then ask your agent, after it finishes a piece of work:
 
-Already have a token? Set `AMI_API_TOKEN` in that block's `env` and it is used
-instead.
+> Take the AMI survey regarding the ticket triage you just did
 
-**From a clone**, if you would rather read the source first:
+That is the whole setup. Nothing to clone, nothing to keep updated, and no token
+to paste — the first call that needs one registers this machine and stores it at
+`~/.ami-survey/token`.
 
-```bash
-python3 ami-survey/scripts/install.py --user
+**`uvx` comes from [uv](https://docs.astral.sh/uv/)** — the same tool the MCP
+docs use for Python servers, so if you have installed one before you already
+have it. If you would rather not, [GETTING-STARTED.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/GETTING-STARTED.md)
+has a `pipx` form and a route that needs neither.
+
+Already have a token? Put it in that block's `env` as `AMI_API_TOKEN` and it is
+used instead of registering a new one.
+
+### Unmeasured — a remote connector, nothing installed
+
+In claude.ai: Settings → Connectors → Add custom connector, and give it
+
+```
+https://survey.agentbenchmark.dev/mcp
 ```
 
-It asks for your submission token, and that is the only thing to supply. Then
-restart your agent. `GETTING-STARTED.md` has the Windows form, the Codex form,
-and what to do when it does not work.
+Nothing to install and no token. These runs are recorded as `unmeasured` and are
+never compared against measured ones — a server on the other side of the
+internet cannot read your runtime's logs, so the token counts and cost are
+simply absent rather than guessed.
 
-## Commands
+Install the client above when you want those numbers too.
 
-In `ami-survey/bin/`. Each is a wrapper that sets `PYTHONPATH` and runs a module,
-so they work from a clone with nothing installed. `--help` on any of them prints
-its full flags.
+## Licence, up front
 
-### Benchmarking a workflow across models
+**This is not open source.** It is an evaluation licence: run it on machines you
+control, redistribute it verbatim if you like, but it may not be modified, sold
+or built upon. Full terms in
+[LICENSE](https://github.com/speedofred/ami-survey-client-v1/blob/main/LICENSE).
 
-**`ami-run`** runs a workflow against a provider's API — your key, your account —
-reads the `usage` block off every real response, and submits the survey. One
-agent loop over four sandboxed file tools, identical for every provider, which is
-what makes the numbers comparable between them.
-
-```bash
-export OPENAI_API_KEY=...
-
-# see what would run, without calling anything
-ami-survey/bin/ami-run support-ticket-triage --provider openai --model gpt-4.1 --dry-run
-
-# the real thing
-ami-survey/bin/ami-run support-ticket-triage --provider openai    --model gpt-4.1
-ami-survey/bin/ami-run support-ticket-triage --provider anthropic --model claude-sonnet-4-5
-ami-survey/bin/ami-run support-ticket-triage --provider gemini    --model gemini-2.5-pro
-
-# a workflow someone sent you, kept wherever you put it
-ami-survey/bin/ami-run their-workflow --dir ~/Downloads/handover \
-    --provider openai --model gpt-4.1
-
-# any OpenAI-compatible endpoint, including a local model
-ami-survey/bin/ami-run support-ticket-triage --provider openai --model llama3.3 \
-    --base-url http://localhost:11434/v1 --api-key-env OLLAMA_API_KEY
-```
-
-Always `--dry-run` first with a workflow you did not write. It resolves the
-prompt, shows the sandboxed workspace, names any `---` blocks it is *not*
-sending, and calls nothing.
-
-Worth knowing about `--grade`: the default is `auto`, which has the model grade
-its own output. That is the one field in the survey nothing can check, so for
-anything you intend to stand behind, use `--grade skip` and submit your own
-grade afterwards with `--no-reset`.
-
-### Managing workflows
-
-**`ami-workflow`** lists, scaffolds and prepares them. It never runs anything —
-that is `ami-run`, and they are separate commands so that printing a prompt and
-spending money on an API are not one word apart.
-
-```bash
-ami-survey/bin/ami-workflow list
-ami-survey/bin/ami-workflow new my-workflow
-ami-survey/bin/ami-workflow show support-ticket-triage
-ami-survey/bin/ami-workflow show support-ticket-triage --prompt   # just the prompt
-ami-survey/bin/ami-workflow list --dir ~/Downloads/handover
-```
-
-`show` clears the workflow's `output/` first, because a benchmark is only
-comparable if every run starts from the same state, then prints the two messages
-to send: the workflow prompt, and the separate request that closes the
-measurement window. `--no-reset` prints without clearing.
-
-### The rest
-
-**`ami-session`** — which session the adapter would measure, and why. The first
-thing to run when a survey measured the wrong thing.
-
-```bash
-ami-survey/bin/ami-session          # the session this survey would read
-ami-survey/bin/ami-session --all    # every session it can see
-```
-
-**`ami-skill`** — the survey procedure and tool schemas, for a runtime that is
-not an MCP client.
-
-```bash
-ami-survey/bin/ami-skill                          # the procedure
-ami-survey/bin/ami-skill --runtime http           # for a plain-HTTP caller
-ami-survey/bin/ami-skill --tools openai           # schemas as function defs
-```
-
-**`ami-mcp`** — the MCP server your agent launches. `scripts/install.py` writes
-it into your agent's configuration; you rarely run it yourself.
-
-Reading the collected results is not here: submissions live on the survey
-service, and the dashboard there is where runs are compared.
-
-## Removing it
-
-```bash
-python3 ami-survey/scripts/uninstall.py
-```
+Said here rather than at the bottom, because finding it at the bottom after
+reading everything else is worse than being told now.
 
 ## What leaves your computer
 
-A survey response: token counts, timings, model names, the stage names your
-workflow declared, and the grade. Not your files, not your prompts, not your
-shell commands. `GETTING-STARTED.md` sets this out in full.
+Token counts, timings, model names, the stage names your workflow declared, and
+the grade. **Not your files, not your prompts, not your shell commands.**
+[GETTING-STARTED.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/GETTING-STARTED.md)
+sets this out in full.
+
+Submissions go to `survey.agentbenchmark.dev` and nowhere else. That destination
+is a constant in the source rather than a setting: a stale environment variable
+cannot redirect your submission onto your own disk, which is the one failure that
+would make a run look successful while collecting nothing.
 
 ## Requirements
 
-Python 3.9 or newer. Nothing to `pip install` — the standard library only.
+Python 3.9 or newer. No dependencies — the standard library only.
 
-## Licence
+## Everything else
 
-Evaluation only; see [LICENSE](LICENSE). This is not open source.
+- [GETTING-STARTED.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/GETTING-STARTED.md)
+  — assumes no prior setup; macOS, Linux and Windows, and what to do when it does
+  not work.
+- [COMMANDS.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/COMMANDS.md)
+  — the clone-and-run route: benchmarking one workflow across several models on
+  your own API key. Not needed to take part.
+- [MAKE-IT-MEASURABLE.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/MAKE-IT-MEASURABLE.md)
+  — how to structure a workflow so there is something worth measuring.

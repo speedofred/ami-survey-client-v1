@@ -17,13 +17,48 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ami-survey"
-version = "1.0.0"
+# Read from ami_survey/__init__.py rather than restated here. The MCP
+# handshake reports the same constant, and a package whose metadata and
+# handshake disagree sends anyone debugging it to the wrong version.
+dynamic = ["version"]
 description = "Measure what an agent workflow actually cost, from the runtime's own session log."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { file = "LICENSE" }
+# An SPDX expression, not the licence text. `license = { file = ... }` inlines all
+# thirty lines of LICENSE into the `License:` metadata header, which renders on
+# PyPI as a wall of legal text where a label belongs. The terms are not an OSI
+# licence and have no SPDX identifier, so they get a `LicenseRef-`, which is the
+# form SPDX reserves for exactly this. `license-files` still ships the full text
+# in the distribution.
+#
+# Note there is deliberately no `License ::` classifier below: PEP 639 forbids
+# pairing one with an expression, and PyPI rejects the upload if you do.
+license = "LicenseRef-AMI-Evaluation-1.0"
+license-files = ["LICENSE"]
 authors = [{ name = "Fred Viner" }]
 keywords = ["mcp", "agent", "benchmark", "telemetry", "claude", "codex"]
+
+# Every one of these is checked against `trove_classifiers`; PyPI rejects an
+# upload carrying a string that is not on its list, and it does so after the
+# version number has been spent.
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Testing",
+  "Topic :: System :: Benchmark",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 
 # Deliberately empty, and worth keeping that way. The client reads a session log
 # and posts JSON; the standard library does both. A dependency here is a
@@ -38,6 +73,9 @@ Source = "https://github.com/speedofred/ami-survey-client-v1"
 # What `uvx ami-survey` runs: the MCP server over stdio, which is how an agent
 # expects to launch a local server.
 ami-survey = "ami_survey.mcp_server:main"
+
+[tool.hatch.version]
+path = "ami-survey/ami_survey/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["ami-survey/ami_survey"]

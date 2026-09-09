@@ -65,6 +65,29 @@ You need three things:
 
 ## Part 1 — Set it up
 
+### The short way, if you only want to submit
+
+Most people do not need any of Part 1. Add this to your agent's MCP
+configuration, restart it, and skip to Part 2:
+
+```json
+{ "mcpServers": { "ami-survey": { "command": "uvx", "args": ["ami-survey"] } } }
+```
+
+`uvx` comes with [uv](https://docs.astral.sh/uv/). If you would rather not
+install uv, `pipx` does the same job — use `"command": "pipx"` with
+`"args": ["run", "ami-survey"]`. Neither ships with Python; install whichever
+you prefer, or follow the longer route below, which needs neither.
+
+There is no token to paste: the first call that needs one registers this machine
+and stores it at `~/.ami-survey/token`.
+
+**The rest of Part 1 is the clone route.** Take it if you want to read the
+source before running it, or if you want the benchmarking commands in
+[COMMANDS.md](https://github.com/speedofred/ami-survey-client-v1/blob/main/COMMANDS.md) — they need a clone and are not part of submitting.
+
+---
+
 ### Step 1: Download it
 
 In a terminal, paste this:
